@@ -1,0 +1,21 @@
+schema: workflow/2022.04
+name: Upload Resume to candidate (HR-01)
+triggers:
+- id: hi_q7Hjnkl
+steps:
+- namespace: Jotform_pdf_fetch
+  runtime: nodejs20.x
+  uses: "./Jotform_pdf_fetch/entry.js"
+- namespace: Jobdiva_APIV2_Token_fetch
+  runtime: nodejs20.x
+  uses: "./Jobdiva_APIV2_Token_fetch/entry.js"
+- namespace: Email_searchCandidateProfile
+  runtime: nodejs20.x
+  uses: "./Email_searchCandidateProfile/entry.js"
+- namespace: Jobdiva_APIV1_Token_fetch
+  runtime: nodejs20.x
+  uses: "./Jobdiva_APIV1_Token_fetch/entry.js"
+- namespace: Upload_PDF
+  runtime: nodejs20.x
+  uses: "./Upload_PDF/entry.js"
+
