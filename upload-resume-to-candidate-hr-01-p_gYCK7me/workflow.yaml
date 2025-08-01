@@ -3,6 +3,9 @@ name: Upload Resume to candidate (HR-01)
 triggers:
 - id: hi_q7Hjnkl
 steps:
+- namespace: Init_WorkflowErrors
+  runtime: nodejs20.x
+  uses: "./Init_WorkflowErrors/entry.js"
 - namespace: Jotform_pdf_fetch
   runtime: nodejs20.x
   uses: "./Jotform_pdf_fetch/entry.js"
@@ -18,4 +21,15 @@ steps:
 - namespace: Upload_PDF
   runtime: nodejs20.x
   uses: "./Upload_PDF/entry.js"
+- namespace: Prepare_Zoom_Message
+  runtime: nodejs20.x
+  uses: "./Prepare_Zoom_Message/entry.js"
+- namespace: zoom_send_chat_message1
+  runtime: nodejs20.x
+  uses: zoom-send-chat-message@0.1.4
+  props:
+    zoom:
+      authProvisionId: apn_ZWhlm5B
+    message: "{{steps.Prepare_Zoom_Message.message}}"
+    to_channel: 4c2f09c819b14ea18a9ea5c50e20f0c1@conference.xmpp.zoom.us
 
