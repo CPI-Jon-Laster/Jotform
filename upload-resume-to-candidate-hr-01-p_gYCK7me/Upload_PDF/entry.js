@@ -2,6 +2,7 @@ import axios from "axios";
 
 export default defineComponent({
   async run({ steps, $ }) {
+    const workflowErrors = $.flow.get('workflowErrors') || [];
         // Extract required inputs from previous steps
     const accessToken = steps.Jobdiva_APIV1_Token_fetch.$return_value.accessToken_v1;
 
@@ -43,7 +44,9 @@ console.log("Email Search Step:", steps.Email_searchCandidateProfile);
     } catch (error) {
       const errMsg = error.response?.data || error.message;
       console.error("Upload failed:", errMsg);
-      throw new Error(`Attachment upload failed: ${JSON.stringify(errMsg)}`);
+      workflowErrors.push(`Upload_PDF: ${error.message}`);
+      $.flow.set('workflowErrors', workflowErrors);
+      return { error: error.message };
     }
   }
 });
