@@ -2,36 +2,36 @@ import axios from "axios";
 
 export default defineComponent({
   async run({ steps, $ }) {
-    console.log("Step started: Fetch Candidate ID");
-
-    // Extract and parse raw form input from trigger
-    const rawString = steps.trigger.event.body?.rawRequest;
-    let raw;
+    const workflowErrors = $.flow.get('workflowErrors') || [];
     try {
-      raw = JSON.parse(rawString);
-      console.log("Parsed raw input:", raw);
-    } catch (e) {
-      throw new Error("Failed to parse rawRequest JSON: " + e.message);
-    }
+      console.log("Step started: Fetch Candidate ID");
 
-    const email = raw.q55_employeesEmail;
-    console.log("Parsed email:", email);
+      // Extract and parse raw form input from trigger
+      const rawString = steps.trigger.event.body?.rawRequest;
+      let raw;
+      try {
+        raw = JSON.parse(rawString);
+        console.log("Parsed raw input:", raw);
+      } catch (e) {
+        throw new Error("Failed to parse rawRequest JSON: " + e.message);
+      }
 
-    const accessToken = steps.Jobdiva_APIV2_Token_fetch.$return_value.accessToken_v2;
-    console.log("Access token:", accessToken ? "✅ Present" : "❌ Missing");
+      const email = raw.q55_employeesEmail;
+      console.log("Parsed email:", email);
 
- 
-    if (!accessToken) throw new Error("Missing JobDiva access token.");
+      const accessToken = steps.Jobdiva_APIV2_Token_fetch.$return_value.accessToken_v2;
+      console.log("Access token:", accessToken ? "✅ Present" : "❌ Missing");
 
-    const url = "https://api.jobdiva.com/apiv2/jobdiva/searchCandidateProfile";
+      if (!accessToken) throw new Error("Missing JobDiva access token.");
 
-    const requestBody = {
-      email
-    };
+      const url = "https://api.jobdiva.com/apiv2/jobdiva/searchCandidateProfile";
 
-    console.log("Prepared request payload (email-only):", JSON.stringify(requestBody, null, 2));
+      const requestBody = {
+        email
+      };
 
-    try {
+      console.log("Prepared request payload (email-only):", JSON.stringify(requestBody, null, 2));
+
       const response = await axios.post(url, requestBody, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -56,7 +56,9 @@ export default defineComponent({
     } catch (error) {
       const errData = error?.response?.data;
       console.error("JobDiva API error:", errData || error.message);
-      throw new Error(`JobDiva API request failed: ${error.message}`);
+      workflowErrors.push(`Email_searchCandidateProfile: ${error.message}`);
+      $.flow.set('workflowErrors', workflowErrors);
+      return { error: error.message };
     }
   },
 });
