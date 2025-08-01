@@ -18,4 +18,12 @@ steps:
 - namespace: Upload_PDF
   runtime: nodejs20.x
   uses: "./Upload_PDF/entry.js"
+- namespace: zoom_send_chat_message1
+  runtime: nodejs20.x
+  uses: zoom-send-chat-message@0.1.4
+  props:
+    zoom:
+      authProvisionId: apn_ZWhlm5B
+    message: test
+    to_channel: 4c2f09c819b14ea18a9ea5c50e20f0c1@conference.xmpp.zoom.us
 
